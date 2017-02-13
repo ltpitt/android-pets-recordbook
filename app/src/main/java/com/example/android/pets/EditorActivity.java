@@ -116,12 +116,16 @@ public class EditorActivity extends AppCompatActivity {
      */
     private void insertPet() {
         // Read from input fields
+
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
         String breedString = mBreedEditText.getText().toString().trim();
         String weightString = mWeightEditText.getText().toString().trim();
-        int weight = Integer.parseInt(weightString);
 
+        int weight = 0;
+        if (!weightString.isEmpty()) {
+            weight = Integer.parseInt(weightString);
+        }
         // Create a ContentValues object where column names are the keys,
         // and pet attributes from the editor are the values.
         ContentValues values = new ContentValues();

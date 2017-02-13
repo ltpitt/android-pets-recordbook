@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * {@link ContentProvider} for Pets app.
@@ -145,22 +146,28 @@ public class PetProvider extends ContentProvider {
      * for that specific row in the database.
      */
     private Uri insertPet(Uri uri, ContentValues values) {
+
+        boolean isEmptyField = false;
+
         // Check that the name is not null
         String name = values.getAsString(PetContract.PetEntry.COLUMN_PET_NAME);
-        if (name == null) {
-            throw new IllegalArgumentException("Pet requires a name");
+        if (name.isEmpty()) {
+            isEmptyField = true;
+            Toast.makeText(getContext(), "Pet requires a name", Toast.LENGTH_LONG).show();
         }
 
         // Check that the gender is valid
         Integer gender = values.getAsInteger(PetContract.PetEntry.COLUMN_PET_GENDER);
         if (gender == null || !PetContract.PetEntry.isValidGender(gender)) {
-            throw new IllegalArgumentException("Pet requires valid gender");
+            isEmptyField = true;
+            Toast.makeText(getContext(), "Pet requires a valid gender", Toast.LENGTH_LONG).show();
         }
 
         // If the weight is provided, check that it's greater than or equal to 0 kg
         Integer weight = values.getAsInteger(PetContract.PetEntry.COLUMN_PET_WEIGHT);
         if (weight != null && weight < 0) {
-            throw new IllegalArgumentException("Pet requires valid weight");
+            isEmptyField = true;
+            Toast.makeText(getContext(), "Pet requires a valid weight", Toast.LENGTH_LONG).show();
         }
 
         // No need to check the breed, any value is valid (including null).
@@ -168,16 +175,21 @@ public class PetProvider extends ContentProvider {
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
-        // Insert the new pet with the given values
-        long id = database.insert(PetContract.PetEntry.TABLE_NAME, null, values);
-        // If the ID is -1, then the insertion failed. Log an error and return null.
-        if (id == -1) {
-            Log.e(LOG_TAG, "Failed to insert row for " + uri);
+        // Insert the new pet with the given values if we have no empty fields
+        if (!isEmptyField) {
+            long id = database.insert(PetContract.PetEntry.TABLE_NAME, null, values);
+            // If the ID is -1, then the insertion failed. Log an error and return null.
+            if (id == -1) {
+                Log.e(LOG_TAG, "Failed to insert row for " + uri);
+                return null;
+            } else {
+                // Return the new URI with the ID (of the newly inserted row) appended at the end
+                return ContentUris.withAppendedId(uri, id);
+            }
+        } else {
             return null;
         }
 
-        // Return the new URI with the ID (of the newly inserted row) appended at the end
-        return ContentUris.withAppendedId(uri, id);
     }
 
     /**
