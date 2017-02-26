@@ -63,7 +63,7 @@ public class PetCursorAdapter extends CursorAdapter {
 
         // Read the item attributes from the Cursor for the current item
         String petName = cursor.getString(nameColumnIndex);
-        String petBreed = cursor.getColumnName(breedColumnIndex);
+        String petBreed = cursor.getString(breedColumnIndex);
 
         // Update the TextViews with the attributes from the current item
         nameTextView.setText(petName);
