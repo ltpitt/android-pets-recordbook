@@ -121,7 +121,7 @@ public final class PetContract {
 
 
         /**
-         * Returns whether or not the given gender is {@link #GENDER_UNKNOWN}, {@link #GENDER_MALE},
+         * Returns whether or not the given gender is {@link #GENDER_UNKNOWN}, {@link #GENDER_MALE}, 
          * or {@link #GENDER_FEMALE}.
          */
         public static boolean isValidGender(int gender) {
